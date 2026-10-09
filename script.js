@@ -1,35 +1,125 @@
+// Rustius Website Client Script
 document.addEventListener('DOMContentLoaded', () => {
-  // Mockup tab switching
-  const tabs = document.querySelectorAll('.mockup-tab');
-  const termPrompt = document.getElementById('term-active-session');
-  
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
+  // Elements
+  const showcaseBtns = document.querySelectorAll('.showcase-btn');
+  const views = {
+    session: document.getElementById('view-session'),
+    hub: document.getElementById('view-hub'),
+    rdp: document.getElementById('view-rdp')
+  };
+  const titlebarPill = document.getElementById('titlebar-pill');
+  const tabsContainer = document.getElementById('workspace-tabs-container');
 
-      const mode = tab.dataset.mode;
-      if (termPrompt) {
-        if (mode === 'ssh') {
-          termPrompt.innerHTML = `<span class="term-prompt">manohar@prod-eu-west:</span><span class="term-path">~/rustius</span>$ <span class="term-cmd">systemctl status api</span><br>
-<span class="term-out">&#9679; api.service - Core Engine API (Rust v0.1.0)<br>&nbsp;&nbsp;&nbsp;Active: active (running) since Sat 2026-10-10 01:20:00 UTC<br>&nbsp;&nbsp;&nbsp;Tasks: 8 (limit: 4915)<br>&nbsp;&nbsp;&nbsp;Memory: 18.2M (load: 0.04)</span><br>
-<span class="term-prompt">manohar@prod-eu-west:</span><span class="term-path">~/rustius</span>$ <span class="term-cursor"></span>`;
-        } else if (mode === 'pty') {
-          termPrompt.innerHTML = `<span class="term-prompt">PS C:\Users\Developer></span> <span class="term-cmd">Get-Process rustius</span><br>
-<span class="term-out">Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id ProcessName<br>-------  ------    -----      -----     ------     -- -----------<br>    382      24    32450      38920       0.42   9124 rustius</span><br>
-<span class="term-prompt">PS C:\Users\Developer></span> <span class="term-cursor"></span>`;
-        } else if (mode === 'rdp') {
-          termPrompt.innerHTML = `<span class="term-out">[IronRDP Canvas Session Active]</span><br>
-<span class="term-out">Target: windows-jumpbox.internal:3389 (1920x1080@60Hz)<br>FastPath PDU Stream: Established<br>Encryption: TLS 1.3 / Network Level Authentication (NLA)</span><br>
-<span class="term-prompt">Remote Desktop:</span> <span class="term-cmd">Connected</span><br>
-<span class="term-prompt">&gt;</span> <span class="term-cursor"></span>`;
-        }
+  // Pill templates for title bar
+  const pillTemplates = {
+    session: '<span class="session-indicator connected"></span><span class="session-name">ubuntu</span><span class="session-badge">SSH · 192.168.83.129</span>',
+    hub: '<span class="session-badge">RUSTIUS 0.1.0</span>',
+    rdp: '<span class="session-indicator connected"></span><span class="session-name">test-edp</span><span class="session-badge">RDP · 192.168.83.128:3389</span>'
+  };
+
+  function switchView(target) {
+    if (!views[target]) return;
+
+    // 1. Update Showcase top buttons
+    showcaseBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.target === target);
+    });
+
+    // 2. Switch workspace view
+    Object.keys(views).forEach(key => {
+      if (views[key]) {
+        views[key].classList.toggle('active', key === target);
+      }
+    });
+
+    // 3. Update Title Bar active pill
+    if (titlebarPill && pillTemplates[target]) {
+      titlebarPill.innerHTML = pillTemplates[target];
+    }
+
+    // 4. Update Workspace tab strip
+    if (tabsContainer) {
+      if (target === 'session') {
+        tabsContainer.innerHTML = `
+          <div class="workspace-tab active" id="tab-item-session" data-target="session">
+            <span class="tab-dot green"></span>
+            <span class="tab-title">ubuntu</span>
+            <span class="tab-sub">SSH - 192.168.83.129</span>
+            <span class="tab-close">✕</span>
+          </div>
+          <div class="workspace-tab-plus" id="tab-item-plus" title="Open Welcome Hub" data-target="hub">+</div>
+        `;
+      } else if (target === 'hub') {
+        tabsContainer.innerHTML = `
+          <div class="workspace-tab-plus active" id="tab-item-plus" title="Welcome Hub" data-target="hub">+</div>
+        `;
+      } else if (target === 'rdp') {
+        tabsContainer.innerHTML = `
+          <div class="workspace-tab active" id="tab-item-rdp" data-target="rdp">
+            <span class="tab-dot green"></span>
+            <span class="tab-title">test-edp</span>
+            <span class="tab-sub">RDP - 192.168.83.128:3389</span>
+            <span class="tab-close">✕</span>
+          </div>
+          <div class="workspace-tab-plus" id="tab-item-plus" title="Open Welcome Hub" data-target="hub">+</div>
+        `;
+      }
+      bindDynamicTabEvents();
+    }
+
+    // 5. Update Sidebar active node highlight
+    document.querySelectorAll('.tree-node').forEach(node => {
+      const nodeTarget = node.dataset.target;
+      if (nodeTarget === target) {
+        node.classList.add('active');
+      } else {
+        node.classList.remove('active');
+      }
+    });
+  }
+
+  function bindDynamicTabEvents() {
+    document.querySelectorAll('.workspace-tabs [data-target]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        switchView(el.dataset.target);
+      });
+    });
+  }
+
+  // Bind showcase switcher buttons
+  showcaseBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchView(btn.dataset.target);
+    });
+  });
+
+  // Bind interactive clicks anywhere with data-target
+  document.querySelectorAll('[data-target]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const target = el.dataset.target;
+      if (target) {
+        switchView(target);
       }
     });
   });
 
+  // Bind new connection / new terminal buttons
+  const newConnBtn = document.getElementById('sidebar-new-btn');
+  if (newConnBtn) {
+    newConnBtn.addEventListener('click', () => switchView('hub'));
+  }
+
+  const newTermBtn = document.getElementById('sidebar-term-btn');
+  if (newTermBtn) {
+    newTermBtn.addEventListener('click', () => switchView('session'));
+  }
+
+  // Initial tab bindings
+  bindDynamicTabEvents();
+
   // Smooth copy command helper
-  const codeBox = document.querySelector('.terminal-code-box');
+  const codeBox = document.getElementById('quick-start-box');
   if (codeBox) {
     codeBox.style.cursor = 'pointer';
     codeBox.title = 'Click to copy command';

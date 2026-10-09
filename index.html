@@ -78,8 +78,8 @@
         </h1>
 
         <p class="hero-subtitle">
-          Lightweight, privacy-respecting, and built in pure Rust with Tauri v2. 
-          Zero Electron bloat, native OS credential encryption, and live terminal directory synchronization.
+          Lightweight, portable, and built in pure Rust with Tauri v2 and Svelte 5. 
+          Zero Electron bloat, native OS credential security, and live terminal directory synchronization.
         </p>
 
         <div class="hero-buttons">
@@ -97,58 +97,409 @@
         </div>
 
         <div class="hero-subtext">
-          <span>✓ Sub-50ms Launch Time</span>
-          <span>✓ &lt;40MB RAM Footprint</span>
-          <span>✓ Portable USB Mode</span>
+          <span>⚡ Sub-50ms Launch Time</span>
+          <span>🪶 &lt;40MB RAM Footprint</span>
+          <span>📦 Portable USB Mode</span>
         </div>
 
-        <!-- Live Desktop Showcase Mockup -->
-        <div class="mockup-wrapper" id="app-mockup">
+        <!-- View Switcher Tabs for Interactive Showcase -->
+        <div class="showcase-controls" aria-label="Mockup view switcher">
+          <button class="showcase-btn active" data-target="session" id="btn-show-session">
+            <span class="dot-status green"></span>
+            <span>Live Session (SSH + SFTP)</span>
+          </button>
+          <button class="showcase-btn" data-target="hub" id="btn-show-hub">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Startup Hub (Zero-Tabs)</span>
+          </button>
+          <button class="showcase-btn" data-target="rdp" id="btn-show-rdp">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>Remote Desktop (IronRDP)</span>
+          </button>
+        </div>
+
+        <!-- Pixel-Perfect Desktop Application Mockup -->
+        <div class="mockup-window" id="app-mockup">
+          <!-- Window Native Title Bar -->
           <div class="mockup-titlebar">
-            <div class="window-dots">
-              <div class="window-dot red"></div>
-              <div class="window-dot yellow"></div>
-              <div class="window-dot green"></div>
+            <div class="titlebar-left">
+              <span class="titlebar-hint">Rustius v0.1.0</span>
             </div>
 
-            <div class="mockup-tabs">
-              <button class="mockup-tab active" data-mode="ssh" id="tab-prod-ssh">
-                <span>⚡ prod-eu-west (SSH)</span>
-              </button>
-              <button class="mockup-tab" data-mode="pty" id="tab-local-pty">
-                <span>&gt;_ PowerShell (PTY)</span>
-              </button>
-              <button class="mockup-tab" data-mode="rdp" id="tab-jumpbox-rdp">
-                <span>🖥️ windows-jumpbox (RDP)</span>
-              </button>
+            <div class="titlebar-center">
+              <div class="titlebar-active-pill" id="titlebar-pill">
+                <span class="session-indicator connected"></span>
+                <span class="session-name">ubuntu</span>
+                <span class="session-badge">SSH · 192.168.83.129</span>
+              </div>
             </div>
 
-            <span style="font-size:0.75rem; color:var(--text-faint); font-family:var(--font-mono);">Rustius v0.1.0</span>
+            <div class="titlebar-win-controls">
+              <button class="win-btn" title="Minimize" aria-label="Minimize">
+                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 5.5h8" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+              </button>
+              <button class="win-btn" title="Maximize" aria-label="Maximize">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1.5" y="1.5" width="7" height="7" stroke="currentColor" stroke-width="1"/></svg>
+              </button>
+              <button class="win-btn win-close" title="Close" aria-label="Close">
+                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+              </button>
+            </div>
           </div>
 
-          <div class="mockup-body">
-            <!-- Terminal area -->
-            <div class="mockup-terminal" id="term-active-session">
-              <span class="term-prompt">manohar@prod-eu-west:</span><span class="term-path">~/rustius</span>$ <span class="term-cmd">systemctl status api</span><br>
-              <span class="term-out">&#9679; api.service - Core Engine API (Rust v0.1.0)<br>&nbsp;&nbsp;&nbsp;Active: active (running) since Sat 2026-10-10 01:20:00 UTC<br>&nbsp;&nbsp;&nbsp;Tasks: 8 (limit: 4915)<br>&nbsp;&nbsp;&nbsp;Memory: 18.2M (load: 0.04)</span><br>
-              <span class="term-prompt">manohar@prod-eu-west:</span><span class="term-path">~/rustius</span>$ <span class="term-cursor"></span>
-            </div>
+          <!-- Application Body: Sidebar + Main Workspace -->
+          <div class="mockup-app-shell">
+            <!-- Authentic Left Sidebar -->
+            <aside class="mockup-sidebar">
+              <!-- Brand Header -->
+              <div class="sidebar-brand-row">
+                <div class="sidebar-brand-left">
+                  <img src="assets/icon.svg" alt="Rustius Icon" class="sidebar-crab-icon">
+                  <span class="sidebar-brand-name">RUSTIUS</span>
+                  <span class="sidebar-brand-version">0.1.0</span>
+                </div>
+                <div class="sidebar-brand-actions">
+                  <button class="sidebar-icon-btn" title="Create Folder">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+                  </button>
+                  <button class="sidebar-icon-btn" title="Settings">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
 
-            <!-- In-Session SFTP Sidebar -->
-            <div class="mockup-sftp">
-              <div class="sftp-header">
-                <span>SFTP Navigator</span>
-                <span class="sftp-sync-badge">● Sync: ON</span>
+              <!-- New Connection Button -->
+              <div class="sidebar-action-row">
+                <button class="sidebar-new-btn" id="sidebar-new-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span>New Connection</span>
+                </button>
               </div>
-              <div class="sftp-list">
-                <div class="sftp-item"><span>📁 .. (parent)</span></div>
-                <div class="sftp-item selected"><span>📁 src</span></div>
-                <div class="sftp-item"><span>📁 crates</span></div>
-                <div class="sftp-item"><span>📄 Cargo.toml</span><span>2.9 KB</span></div>
-                <div class="sftp-item"><span>📄 config.toml</span><span>1.4 KB</span></div>
-                <div class="sftp-item"><span>📄 README.md</span><span>7.1 KB</span></div>
+
+              <!-- Search & Filter -->
+              <div class="sidebar-filter-area">
+                <div class="sidebar-search-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  <input type="text" placeholder="Search connections..." readonly>
+                </div>
+                <div class="sidebar-env-nav">
+                  <span class="env-chip active">All</span>
+                  <span class="env-chip">Production</span>
+                </div>
               </div>
-            </div>
+
+              <!-- Connection Tree List -->
+              <div class="sidebar-tree">
+                <div class="tree-node" data-target="session">
+                  <div class="tree-icon">&gt;_</div>
+                  <div class="tree-details">
+                    <div class="tree-title-row">
+                      <span class="tree-name">test</span>
+                      <span class="env-tag">Production</span>
+                    </div>
+                    <span class="tree-sub">localhost:2222</span>
+                  </div>
+                </div>
+
+                <div class="tree-node" data-target="session">
+                  <div class="tree-icon">⇄</div>
+                  <div class="tree-details">
+                    <div class="tree-title-row">
+                      <span class="tree-name">test-sftp</span>
+                      <span class="env-tag">Production</span>
+                    </div>
+                    <span class="tree-sub">localhost:2222</span>
+                  </div>
+                </div>
+
+                <!-- Folder Test -->
+                <div class="tree-folder-group">
+                  <div class="tree-folder-header">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+                    <span class="folder-name">Test</span>
+                    <span class="folder-count">0</span>
+                  </div>
+
+                  <div class="tree-folder-children">
+                    <div class="tree-node" data-target="rdp">
+                      <div class="tree-icon">🖥</div>
+                      <div class="tree-details">
+                        <div class="tree-title-row">
+                          <span class="tree-name">test-edp</span>
+                          <span class="env-tag">Production</span>
+                        </div>
+                        <span class="tree-sub">192.168.83.128:3389</span>
+                      </div>
+                    </div>
+
+                    <div class="tree-node active" data-target="session">
+                      <div class="tree-icon">&gt;_</div>
+                      <div class="tree-details">
+                        <div class="tree-title-row">
+                          <span class="tree-name">ubuntu</span>
+                          <span class="env-tag">Production</span>
+                        </div>
+                        <span class="tree-sub">192.168.83.129:22</span>
+                      </div>
+                    </div>
+
+                    <div class="tree-node" data-target="session">
+                      <div class="tree-icon">&gt;_</div>
+                      <div class="tree-details">
+                        <div class="tree-title-row">
+                          <span class="tree-name">test123</span>
+                          <span class="env-tag">Production</span>
+                        </div>
+                        <span class="tree-sub">192.168.83.129:22</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sidebar Footer: New Terminal -->
+              <div class="sidebar-footer">
+                <button class="sidebar-footer-btn" id="sidebar-term-btn" data-target="session">
+                  <span class="term-sym">&gt;_</span>
+                  <span>New Terminal</span>
+                  <kbd class="shortcut-kbd">Ctrl+'</kbd>
+                </button>
+              </div>
+            </aside>
+
+            <!-- Main Workspace Area -->
+            <main class="mockup-workspace">
+              <!-- Tab Strip -->
+              <div class="workspace-tabs-bar">
+                <div class="workspace-tabs" id="workspace-tabs-container">
+                  <div class="workspace-tab active" id="tab-item-session" data-target="session">
+                    <span class="tab-dot green"></span>
+                    <span class="tab-title">ubuntu</span>
+                    <span class="tab-sub">SSH - 192.168.83.129</span>
+                    <span class="tab-close">✕</span>
+                  </div>
+                  <div class="workspace-tab-plus" id="tab-item-plus" title="Open Welcome Hub" data-target="hub">+</div>
+                </div>
+              </div>
+
+              <!-- View 1: Connected Session (SSH + SFTP Navigator Split) -->
+              <div class="workspace-view active" id="view-session">
+                <!-- Sub Header Bar -->
+                <div class="session-subbar">
+                  <div class="subbar-left">
+                    <span class="subbar-icon">&gt;_</span>
+                    <span class="subbar-title">ubu...</span>
+                    <span class="subbar-ip">SSH - 192.168.83.129</span>
+                    <span class="subbar-btn">-</span>
+                    <span class="subbar-btn">+</span>
+                  </div>
+                  <div class="subbar-right">
+                    <button class="sftp-toggle-btn active">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                      <span>SFTP Browser</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Split Workspace: SFTP Navigator on Left, xterm.js on Right -->
+                <div class="session-split-body">
+                  <!-- SFTP Navigator Pane -->
+                  <div class="sftp-navigator-pane">
+                    <div class="sftp-pane-header">
+                      <div class="sftp-pane-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+                        <span>SFTP Navigator</span>
+                      </div>
+                      <button class="sftp-pane-btn" title="Toggle Pane">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+                      </button>
+                    </div>
+
+                    <!-- Action Strip -->
+                    <div class="sftp-actions-strip">
+                      <button class="sftp-action-btn" title="Parent Directory"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+                      <button class="sftp-action-btn" title="Home"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
+                      <button class="sftp-action-btn" title="Refresh"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
+                      <button class="sftp-action-btn active" title="Terminal Follow: ON"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg></button>
+                      <span class="sftp-sep"></span>
+                      <button class="sftp-action-btn" title="New Folder"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="9" y1="13" x2="15" y2="13"/></svg></button>
+                      <button class="sftp-action-btn" title="Upload"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>
+                    </div>
+
+                    <!-- Path Input -->
+                    <div class="sftp-path-row">
+                      <span>/home/manohar</span>
+                    </div>
+
+                    <!-- Filter Input -->
+                    <div class="sftp-filter-row">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                      <input type="text" placeholder="Filter files..." readonly>
+                    </div>
+
+                    <!-- File Tree List matching exact screenshot -->
+                    <div class="sftp-file-list">
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">.cache</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">.config</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">.gnupg</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">.local</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">.ssh</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Desktop</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Documents</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Downloads</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Music</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Pictures</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Public</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">snap</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Templates</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Test</span></div>
+                      <div class="sftp-entry dir"><span class="f-icon">📁</span> <span class="f-name">Videos</span></div>
+                      <div class="sftp-entry file"><span class="f-icon">📄</span> <span class="f-name">.bash_history</span> <span class="f-size">235 B</span></div>
+                      <div class="sftp-entry file"><span class="f-icon">📄</span> <span class="f-name">.bash_logout</span> <span class="f-size">220 B</span></div>
+                      <div class="sftp-entry file"><span class="f-icon">📄</span> <span class="f-name">.bashrc</span> <span class="f-size">3.7 KB</span></div>
+                      <div class="sftp-entry file"><span class="f-icon">📄</span> <span class="f-name">.profile</span> <span class="f-size">807 B</span></div>
+                    </div>
+                  </div>
+
+                  <!-- Terminal View (xterm.js look) -->
+                  <div class="terminal-screen-pane">
+                    <div class="term-line"><span class="term-dim">Welcome to Ubuntu 26.04 LTS (GNU/Linux 7.0.0-38-generic x86_64)</span></div>
+                    <div class="term-line">&nbsp;</div>
+                    <div class="term-line"><span class="term-dim">* Documentation:</span> &nbsp;<span class="term-link">https://docs.ubuntu.com</span></div>
+                    <div class="term-line"><span class="term-dim">* Management:</span> &nbsp;&nbsp;&nbsp;<span class="term-link">https://landscape.canonical.com</span></div>
+                    <div class="term-line"><span class="term-dim">* Support:</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="term-link">https://ubuntu.com/pro</span></div>
+                    <div class="term-line">&nbsp;</div>
+                    <div class="term-line"><span class="term-dim">Expanded Security Maintenance for Applications is not enabled.</span></div>
+                    <div class="term-line">&nbsp;</div>
+                    <div class="term-line"><span class="term-dim">149 updates can be applied immediately.</span></div>
+                    <div class="term-line"><span class="term-dim">5 of these updates are standard security updates.</span></div>
+                    <div class="term-line"><span class="term-dim">To see these additional updates run: apt list --upgradable</span></div>
+                    <div class="term-line">&nbsp;</div>
+                    <div class="term-line"><span class="term-dim">Enable ESM Apps to receive additional future security updates.</span></div>
+                    <div class="term-line"><span class="term-dim">See https://ubuntu.com/esm or run: sudo pro status</span></div>
+                    <div class="term-line">&nbsp;</div>
+                    <div class="term-line"><span class="term-dim">Last login: Fri Oct  9 19:20:04 2026 from 192.168.83.1</span></div>
+                    <div class="term-line"><span class="term-user">manohar@manohar-VMware-Virtual-Platform</span><span class="term-dim">:</span><span class="term-path">~</span><span class="term-dim">$ </span><span class="term-cursor"></span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- View 2: Startup Hub View (Exact 1:1 match of Screenshot 1) -->
+              <div class="workspace-view" id="view-hub">
+                <div class="hub-container">
+                  <div class="hub-hero-mesh"></div>
+
+                  <div class="hub-content">
+                    <!-- Glowing Crab Mascot -->
+                    <div class="hub-mascot-wrapper">
+                      <img src="assets/logo.svg" alt="Rustius Mascot" class="hub-mascot-img">
+                    </div>
+                    <div class="hub-logo-text">rustius</div>
+                    <span class="hub-eyebrow">PORTABLE DESKTOP CLIENT</span>
+                    
+                    <h2 class="hub-heading">Engineered for speed.<br>Built with Rust.</h2>
+                    
+                    <p class="hub-description">
+                      A single, portable executable for SSH, SFTP, and RDP. Zero Electron bloat.
+                    </p>
+
+                    <!-- CTAs -->
+                    <div class="hub-actions">
+                      <button class="hub-btn-white" data-target="session">
+                        <span>New Connection</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                      </button>
+                      <button class="hub-btn-dark" data-target="session">
+                        <span>Open Local Shell</span>
+                      </button>
+                    </div>
+
+                    <!-- 4 Bento Cards -->
+                    <div class="hub-bento-grid">
+                      <div class="hub-card" data-target="session">
+                        <div class="hub-card-head">
+                          <span class="hub-card-icon">&gt;_</span>
+                          <span class="hub-card-badge">SSH</span>
+                        </div>
+                        <h4 class="hub-card-title">Terminal Sessions</h4>
+                        <p class="hub-card-desc">xterm.js with support for legacy ciphers and key exchanges.</p>
+                      </div>
+
+                      <div class="hub-card" data-target="session">
+                        <div class="hub-card-head">
+                          <span class="hub-card-icon">⇄</span>
+                          <span class="hub-card-badge">SFTP</span>
+                        </div>
+                        <h4 class="hub-card-title">Dual-Pane Browser</h4>
+                        <p class="hub-card-desc">Fast local and remote directory file manager with async transfers.</p>
+                      </div>
+
+                      <div class="hub-card" data-target="rdp">
+                        <div class="hub-card-head">
+                          <span class="hub-card-icon">🖥</span>
+                          <span class="hub-card-badge">RDP</span>
+                        </div>
+                        <h4 class="hub-card-title">Remote Desktop</h4>
+                        <p class="hub-card-desc">In-tab canvas rendering powered by pure-Rust IronRDP.</p>
+                      </div>
+
+                      <div class="hub-card" data-target="session">
+                        <div class="hub-card-head">
+                          <span class="hub-card-icon">⚙</span>
+                          <span class="hub-card-badge">PTY</span>
+                        </div>
+                        <h4 class="hub-card-title">Local Shell</h4>
+                        <p class="hub-card-desc">Instant pseudo-terminal sessions using cross-platform portable-pty.</p>
+                      </div>
+                    </div>
+
+                    <!-- Bottom Specs Bar -->
+                    <div class="hub-specs-bar">
+                      <div class="hub-spec-item">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                        <span>100% Portable · Config next to .exe</span>
+                      </div>
+                      <div class="hub-spec-item">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span>Memory Safe · Pure Rust</span>
+                      </div>
+                      <div class="hub-spec-item">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                        <span>~3MB Executable · Native WebView</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- View 3: Remote Desktop (IronRDP) View -->
+              <div class="workspace-view" id="view-rdp">
+                <div class="rdp-canvas-view">
+                  <div class="rdp-infobar">
+                    <span class="dot-status green"></span>
+                    <span>IronRDP FastPath Stream · 1920x1080 @ 60 FPS</span>
+                    <span class="rdp-tag">NLA / TLS 1.3</span>
+                    <span class="rdp-tag">Latency: 2ms</span>
+                  </div>
+                  <div class="rdp-screen-mock">
+                    <div class="rdp-desktop-wall">
+                      <div class="rdp-center-brand">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        <h4>Windows Server 2025 Datacenter</h4>
+                        <p>test-edp · 192.168.83.128:3389</p>
+                      </div>
+                    </div>
+                    <div class="rdp-taskbar">
+                      <div class="rdp-start-btn">⊞</div>
+                      <div class="rdp-task-item">Server Manager</div>
+                      <div class="rdp-task-item active">PowerShell 7.4</div>
+                      <div class="rdp-task-tray">19:20 | 10/10/2026</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </main>
           </div>
         </div>
       </div>
@@ -250,7 +601,7 @@
             </div>
             <div>
               <h4>Zero-Install Portable Mode</h4>
-              <p>Follows VS Code portable mode conventions. Simply place a <code>data/</code> folder alongside the executable to store all sessions, connections, and configs on a USB thumb drive.</p>
+              <p>Follows portable mode conventions. Simply place a <code>data/</code> folder alongside the executable to store all sessions, connections, and configs on a USB thumb drive.</p>
             </div>
           </div>
 
