@@ -1,0 +1,14 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node modules (if any)
+node_modules/
+
+# Cloudflare Pages local preview
+.wrangler/
