@@ -2,9 +2,10 @@
 document.addEventListener('DOMContentLoaded', () => {
   const codeBox = document.getElementById('quick-start-box');
   if (codeBox) {
-    codeBox.title = 'Click to copy command';
+    codeBox.title = 'Click to copy build commands';
     codeBox.addEventListener('click', () => {
-      navigator.clipboard.writeText('cargo tauri dev').then(() => {
+      const commands = 'git clone https://github.com/jlmanohar/rustius.git\ncd rustius\nnpm install\ncargo tauri build';
+      navigator.clipboard.writeText(commands).then(() => {
         const header = codeBox.querySelector('.terminal-code-header span:last-child');
         if (header) {
           const original = header.textContent;
